@@ -1,0 +1,11 @@
+{
+  "name": "cabal-local-prover",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:lsankar4033/cabal-local-prover.git",
+  "author": "lsankar4033 <lsankar4033@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "snarkjs": "0.4.16"
+  }
+}
