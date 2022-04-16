@@ -8,5 +8,6 @@ Instructions:
 - yarn
 - npm install -g snarkjs
 - `node generate_witness.js privkey devcon-num`
+- download zkey from wherever hosted, put it here as ./VerifyCabal.zkey
 - `snarkjs g16p prove VerifyCabal.zkey witness.wtns proof.json public.json`
 - reconnect to internet, paste proof.json, public.json into site, submit
