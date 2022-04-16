@@ -4,10 +4,6 @@ const buildPoseidon = require("circomlibjs").buildPoseidon;
 
 const { readFileSync, writeFile } = require("fs");
 
-// TODO: figure out how to build sync
-poseidon = await buildPoseidon();
-F = poseidon.F;
-
 // for converting privkey to 4-tuple
 function bigintToTuple(x) {
   // 2 ** 64
@@ -22,55 +18,64 @@ function bigintToTuple(x) {
   return ret;
 }
 
-// TODO: test!
-if (process.argv.length != 4) {
-  console.log("Usage: node generate_witness.js <privkey> <devcon-num>");
-} else {
 
-  const priv = process.argv[2]
 
-  const address = ethers.utils.computeAddress(priv);
-  const addressNum = BigInt(address).toString();
-  const privTuple =  bigintToTuple(BigInt(priv))
+// TODO: test E2E
+buildPoseidon().then(poseidon => {
+  const F = poseidon.F;
 
-  const nullifier = F.toObject(poseidon([privTuple[0]]))
+  if (process.argv.length != 4) {
+    console.log("Usage: node generate_witness.js <privkey> <devcon-num>");
+  } else {
 
-  const tree_num = process.argv[3]
+    const priv = process.argv[2]
 
-  const ns = new Set([1,2,3,4,5]);
-  if (!ns.has(parseInt(tree_num))) {
-    console.log("Must enter a num between 1 and 5, inclusive");
-    return
-  }
+    const address = ethers.utils.computeAddress(priv);
+    const addressNum = BigInt(address).toString();
+    const privTuple =  bigintToTuple(BigInt(priv))
 
-  const tree = readFileSync(`./trees/tree${tree_num}.json`);
+    const nullifier = F.toObject(poseidon([privTuple[0]]))
 
-  const pathElements = tree['leafToPathElements'][addressNum];
-  const pathIndices = tree['leafToPathIndices'][addressNum];
-  if (pathElements === undefined || pathIndices === undefined) {
-    console.log(`Your address isn't in the tree for devcon ${tree_num}`);
-    return;
-  }
+    const tree_num = process.argv[3]
 
-  const input = {
-    "privkey": privTuple,
-    "nullifier": nullifier,
-    "merkleRoot": tree['root'],
-    "merklePathElements": pathElements,
-    "merklePathIndices": pathIndices
-  }
-
-  const buffer = readFileSync('./VerifyCabal.wasm');
-  wc(buffer).then(async witnessCalculator => {
-    const w= await witnessCalculator.calculateWitness(input,0);
-    for (let i=0; i< w.length; i++){
-      console.log(w[i]);
+    const ns = new Set([1,2,3,4,5]);
+    if (!ns.has(parseInt(tree_num))) {
+      console.log("Must enter a num between 1 and 5, inclusive");
+      return
     }
-    const buff= await witnessCalculator.calculateWTNSBin(input,0);
 
-    // NOTE: write file to fixed place rather than arg
-    writeFile('./witness.wtns', buff, function(err) {
-      if (err) throw err;
+    const tree = readFileSync(`./trees/tree${tree_num}.json`);
+
+    const pathElements = tree['leafToPathElements'][addressNum];
+    const pathIndices = tree['leafToPathIndices'][addressNum];
+    if (pathElements === undefined || pathIndices === undefined) {
+      console.log(`Your address isn't in the tree for devcon ${tree_num}`);
+      return;
+    }
+
+    const input = {
+      "privkey": privTuple,
+      "nullifier": nullifier,
+      "merkleRoot": tree['root'],
+      "merklePathElements": pathElements,
+      "merklePathIndices": pathIndices
+    }
+
+    const buffer = readFileSync('./VerifyCabal.wasm');
+    wc(buffer).then(async witnessCalculator => {
+      const w= await witnessCalculator.calculateWitness(input,0);
+      for (let i=0; i< w.length; i++){
+        console.log(w[i]);
+      }
+      const buff= await witnessCalculator.calculateWTNSBin(input,0);
+
+      // NOTE: write file to fixed place rather than arg
+      writeFile('./witness.wtns', buff, function(err) {
+        if (err) throw err;
+      });
     });
-  });
-}
+  }
+});
+
+
+
