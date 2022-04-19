@@ -1,13 +1,40 @@
 # cabal-local-prover
 
-TODO: flesh the below out more
+Generate proofs for cabal locally.
 
-Instructions:
-- (read code? verify that zkey, wasm file are same as hosted versions?)
-- disconnect from internet
-- yarn
-- npm install -g snarkjs
-- `node generate_witness.js privkey devcon-num`
-- download zkey from wherever hosted, put it here as ./VerifyCabal.zkey
-- `snarkjs g16p prove VerifyCabal.zkey witness.wtns proof.json public.json`
-- reconnect to internet, paste proof.json, public.json into site, submit
+### Setup
+
+```
+$ yarn
+$ npm install -g snarkjs
+```
+
+### Proving
+
+First, disconnect your internet! You'll be running a CLI command with your private key as raw input, so make sure you're not online.
+
+Next, read the code. To audit that your private key isn't stored anywhere and that the proof returned is the output from snarkjs (and not some artifact that in any way can be used to reconstruct your private key).
+
+Next, generate your witness:
+
+```
+$ node generate_witness.js <privkey> <devcon-num>
+```
+
+For example, if you're generating a proof for private key `0xDEADBEEF` and DevCon4:
+
+```
+$ node generate_witness.js "0xDEAFBEEF" 4
+```
+
+This command outputs the witness locally to witness.wtns.
+
+Finally, generate your proof:
+
+```
+snarkjs g16p VerifyCabal.zkey witness.wtns proof.json public.json
+```
+
+And finally, enter the contents of `proof.json` and `public.json` into the cabal UI. 
+
+Welcome to the cabal.
