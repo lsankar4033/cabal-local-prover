@@ -44,8 +44,7 @@ buildPoseidon().then(poseidon => {
       return
     }
 
-    const tree = readFileSync(`./trees/tree${tree_num}.json`);
-
+    const tree = JSON.parse(readFileSync(`./trees/tree${tree_num}.json`));
     const pathElements = tree['leafToPathElements'][addressNum];
     const pathIndices = tree['leafToPathIndices'][addressNum];
     if (pathElements === undefined || pathIndices === undefined) {
@@ -63,10 +62,6 @@ buildPoseidon().then(poseidon => {
 
     const buffer = readFileSync('./VerifyCabal.wasm');
     wc(buffer).then(async witnessCalculator => {
-      const w= await witnessCalculator.calculateWitness(input,0);
-      for (let i=0; i< w.length; i++){
-        console.log(w[i]);
-      }
       const buff= await witnessCalculator.calculateWTNSBin(input,0);
 
       // NOTE: write file to fixed place rather than arg
