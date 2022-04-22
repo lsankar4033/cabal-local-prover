@@ -35,6 +35,13 @@ Finally, generate your proof:
 snarkjs g16p VerifyCabal.zkey witness.wtns proof.json public.json
 ```
 
-And finally, enter the contents of `proof.json` and `public.json` into the cabal UI. 
+This will generate `proof.json` and `public.json`. The json you'll need to enter into the cabal UI is a concatenation of these, of the format
+
+```
+{
+    "proof": (proof.json),
+    "publicSignals": (public.json object)
+}
+```
 
 Welcome to the cabal.
