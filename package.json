@@ -5,10 +5,6 @@
   "repository": "git@github.com:lsankar4033/cabal-local-prover.git",
   "author": "lsankar4033 <lsankar4033@gmail.com>",
   "license": "MIT",
-  "scripts": {
-    "gen_witness": "create the witness file, then call node generate_witness",
-    "gen_proof": "snarkjs command"
-  },
   "dependencies": {
     "circomlibjs": "0.1.2",
     "ethers": "5.6.4",
